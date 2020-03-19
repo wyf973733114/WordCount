@@ -13,9 +13,9 @@ class WordCountManager {
     var path: String = ""
     // 使用数组便于指令拓展
     // 一级指令数组（对单个文件），先后次序会影响操作的优先级（左边最高）
-    let parametersFirst = ["-s", "-c", "-w", "-l"]
+    let parametersFirst = ["-a", "-c", "-w", "-l"]
     // 二级指令数组（对于文件夹），暂时只有一个二级指令
-    let parametersSecond = ["-a"]
+    let parametersSecond = ["-s"]
     
     // 要进行的一级指令操作数组
     var operationsFirst:[String] = []
@@ -25,6 +25,9 @@ class WordCountManager {
     init() {
         ///输入指令进行构造
         while wordCounts.count == 0 {
+            operationsFirst.removeAll()
+            operationsSecond.removeAll()
+            
             guard let input = readLine() else {
                 //  测试环境下会触发，真实运行环境下不会触发
                 debugPrint("输入不可为空")
@@ -50,6 +53,12 @@ class WordCountManager {
                     operationsFirst.append(item)
                 }
             }
+            // 2.3 没有输入指令
+            if operationsFirst.count + operationsSecond.count == 0 {
+                print("没有输入的指令")
+                continue
+            }
+            
             // 3. 存储剩下的文件路径
             path = command
             if let _ = WordCount(path){
@@ -63,14 +72,14 @@ class WordCountManager {
     func operatingSecond() {
         for item in operationsSecond {
             switch item {
-            case "-a":
+            case "-s":
                 //文件管理
                 let manager = FileManager.default
                 // 文件名
                 let fileName = (path as NSString).lastPathComponent
                 // 路径
                 let folder = (path as NSString).deletingLastPathComponent
-
+                
                 guard let subPaths = manager.subpaths(atPath: folder) else {
                     print("找不到子文件或子文件夹")
                     return
@@ -94,13 +103,12 @@ class WordCountManager {
         if operationsSecond.count == 0, let wordCount = WordCount(path){
             wordCounts.append(wordCount)
         }
-        
-        for item in operationsFirst {
-            for wordCount in wordCounts {
-                // 如果进行了二级指令，将会对多个文件进行相同的操作
-                print(wordCount.path)
+        for wordCount in wordCounts {
+            print(wordCount.path)
+            // 如果进行了二级指令，将会对多个文件进行相同的操作
+            for item in operationsFirst {
                 switch item {
-                case "-s":
+                case "-a":
                     // 进行代码模式处理
                     wordCount.dealCode()
                     print("文件空行数为\(wordCount.spaceLineCount)")
@@ -123,5 +131,4 @@ class WordCountManager {
             }
         }
     }
-    
 }

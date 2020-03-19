@@ -10,10 +10,9 @@
 import Foundation
 
 let manager = WordCountManager()
-// 二级指令操作  wc.exe -a /Users/feng/Desktop/data/test.txt
-// wc.exe -a /Users/feng/Desktop/测试/test.txt
+// 二级指令操作
 manager.operatingSecond()
-// 一级指令操作  wc.exe -l /Users/feng/Desktop/data/test.txt
+// 一级指令操作
 manager.operatingFirst()
 
 
